@@ -77,7 +77,7 @@ def printAllWarehouses():
     print('Storage capacity across all 4 Warehouses is at {}%\n'.format(round((100 - overallCapacity/INSURED_MAX_MULTIPLE * 100),4)))
 
 
-
+asdasd
 
 initialiseWarehouses(WAREHOUSE_A)
 initialiseWarehouses(WAREHOUSE_B)
