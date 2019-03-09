@@ -120,8 +120,14 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
     if warehouseData[warehouseNumber][getShapeNumber(shape)] > 0: #good if true
         print("Shape allowed in this warehouse")
         if value < warehouseData[warehouseNumber][WAREHOUSE_SPACE] or value > INSURED_MAX_SINGLE: #good if true
-            
             print("Item value is low enough")
+            warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][0] = itemNumber
+            warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][1] = description
+            warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][2] = value
+            warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][3] = shape
+            warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][4] = weight
+            warehouseData[warehouseNumber][WAREHOUSE_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_SPACE] - value
+            warehouseData[warehouseNumber][WAREHOUSE_ITEMS] = warehouseData[warehouseNumber][WAREHOUSE_ITEMS] + 1
         else:
             print("Item value is too much")
     else:
@@ -177,13 +183,13 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
 
 
 def getShapeNumber(passedString):
-    if (passedString == WAREHOUSE_SHAPES[0]):
+    if passedString == WAREHOUSE_SHAPES[0]:
         return WAREHOUSE_RECTANGLE
-    if (passedString == WAREHOUSE_SHAPES[1]):
+    if passedString == WAREHOUSE_SHAPES[1]:
         return WAREHOUSE_SPHERE
-    if (passedString == WAREHOUSE_SHAPES[2]):
+    if passedString == WAREHOUSE_SHAPES[2]:
         return WAREHOUSE_PYRAMID
-    if (passedString == WAREHOUSE_SHAPES[3]):
+    if passedString == WAREHOUSE_SHAPES[3]:
         return WAREHOUSE_SQUARE
 
 
