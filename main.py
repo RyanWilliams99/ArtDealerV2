@@ -61,7 +61,7 @@ def initialiseWarehouses(warehouseNumber):
             warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE - warehouseData[warehouseNumber][
                 WAREHOUSE_VALUE]
         #Shapes Allowed
-        warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 5
+        warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 3
         warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE_WEIGHT] = 1000
         warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID] = 10
         warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID_WEIGHT] = 2000
@@ -116,46 +116,75 @@ def printAllWarehouses():
     print('Storage capacity across all 4 Warehouses is at {}%\n'.format(round((100 - overallCapacity/INSURED_MAX_MULTIPLE * 100),4)))
 
 
-
-#Add a new item to a warehouse using the data passed to it
 def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
-    #Updates overall capacity value as it is used to determine if there is enough space in any warehouse
-    overallCapacity = warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE] + \
-                      warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]
-    print("Adding " + str(description) + " to Warehouse " + WAREHOUSE_NAMES[warehouseNumber] + "...")
-    if value > INSURED_MAX_SINGLE: #Print error and return 0 if value over 2000000000
-        print("ERROR - Value is higher than the total insured value of a single warehouse")
-        return 0
-    if value > overallCapacity: #Print error and return 0 if impossible to store this item without removing others
-        print("ERROR - Remaining storage capacity across all 4 warehouse is less than the current item value\n"
-              "Some items will have to be removed to store this item")
-        return 0
-    if value == INSURED_MAX_SINGLE: #Prompts user that a whole warehouse is needed
-        print("An entire warehouse will be needed to store this item")
-        #identify_items_to_be_moved(warehouseNumber, itemNumber, description, value)
-        return 0
-    if (value > warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE]) & (value > warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE]) & \
-       (value > warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE]) & (value > warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]):
-        print("No warehouse currently has space")#Tells user no space is available then calls identify_items_to_be_moved
-        #identify_items_to_be_moved(warehouseNumber,itemNumber,description,value)
-        return  0
+    if warehouseData[warehouseNumber][getShapeNumber(shape)] > 0: #good if true
+        print("Shape allowed in this warehouse")
+        if value < warehouseData[warehouseNumber][WAREHOUSE_SPACE] or value > INSURED_MAX_SINGLE: #good if true
+            
+            print("Item value is low enough")
+        else:
+            print("Item value is too much")
+    else:
+        print("Cannot store " + shape + " in Warehouse " + WAREHOUSE_NAMES[warehouseNumber])
 
-    if warehouseData[warehouseNumber][WAREHOUSE_SPACE] >= value:
-        warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][0] = itemNumber
-        warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][1] = description
-        warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][2] = value
-        warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][3] = shape
-        warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][4] = weight
-        warehouseData[warehouseNumber][WAREHOUSE_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_SPACE] - value
-        warehouseData[warehouseNumber][WAREHOUSE_ITEMS] = warehouseData[warehouseNumber][WAREHOUSE_ITEMS] + 1
-        print("Successfully added " + description + " to warehouse {}, Warehouse {} at {}% capacity"
-              .format(WAREHOUSE_NAMES[warehouseNumber],WAREHOUSE_NAMES[warehouseNumber],
-                      round((100 - warehouseData[warehouseNumber][WAREHOUSE_SPACE] / INSURED_MAX_SINGLE * 100), 2)))
-    # else: #Identifys items to move if enough space overall but not in this warehouse
+
+
+
+
+
+
+
+    # #Updates overall capacity value as it is used to determine if there is enough space in any warehouse
+    # overallCapacity = warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE] + \
+    #                   warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]
+    # print("Adding " + str(description) + " to Warehouse " + WAREHOUSE_NAMES[warehouseNumber] + "...")
+    # if value > INSURED_MAX_SINGLE: #Print error and return 0 if value over 2000000000
+    #     print("ERROR - Value is higher than the total insured value of a single warehouse")
+    #     return 0
+    # if value > overallCapacity: #Print error and return 0 if impossible to store this item without removing others
+    #     print("ERROR - Remaining storage capacity across all 4 warehouse is less than the current item value\n"
+    #           "Some items will have to be removed to store this item")
+    #     return 0
+    # if value == INSURED_MAX_SINGLE: #Prompts user that a whole warehouse is needed
+    #     print("An entire warehouse will be needed to store this item")
     #     #identify_items_to_be_moved(warehouseNumber, itemNumber, description, value)
+    #     return 0
+    # if (value > warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE]) & (value > warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE]) & \
+    #    (value > warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE]) & (value > warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]):
+    #     print("No warehouse currently has space")#Tells user no space is available then calls identify_items_to_be_moved
+    #     #identify_items_to_be_moved(warehouseNumber,itemNumber,description,value)
+    #     return  0
+    # if (warehouseData[warehouseNumber][getShapeNumber(shape)] > 0):
+    #     print("ITEM CAN GO IN THIS WAREHOUSE")
+    #     if warehouseData[warehouseNumber][WAREHOUSE_SPACE] >= value:
+    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][0] = itemNumber
+    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][1] = description
+    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][2] = value
+    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][3] = shape
+    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][4] = weight
+    #         warehouseData[warehouseNumber][WAREHOUSE_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_SPACE] - value
+    #         warehouseData[warehouseNumber][WAREHOUSE_ITEMS] = warehouseData[warehouseNumber][WAREHOUSE_ITEMS] + 1
+    #         warehouseData[warehouseNumber][getShapeNumber(shape)] -= 1
+    #         print("Successfully added " + description + " to warehouse {}, Warehouse {} at {}% capacity"
+    #               .format(WAREHOUSE_NAMES[warehouseNumber], WAREHOUSE_NAMES[warehouseNumber],
+    #                       round((100 - warehouseData[warehouseNumber][WAREHOUSE_SPACE] / INSURED_MAX_SINGLE * 100), 2)))
+    # else:
+    #     print("Wrong shape for this warehouse OR not allowed any more of that shape")
+    #
+    #
+    # # else: #Identifys items to move if enough space overall but not in this warehouse
+    # #     #identify_items_to_be_moved(warehouseNumber, itemNumber, description, value)
 
 
-
+def getShapeNumber(passedString):
+    if (passedString == WAREHOUSE_SHAPES[0]):
+        return WAREHOUSE_RECTANGLE
+    if (passedString == WAREHOUSE_SHAPES[1]):
+        return WAREHOUSE_SPHERE
+    if (passedString == WAREHOUSE_SHAPES[2]):
+        return WAREHOUSE_PYRAMID
+    if (passedString == WAREHOUSE_SHAPES[3]):
+        return WAREHOUSE_SQUARE
 
 
 def task1():
@@ -180,5 +209,5 @@ initialiseWarehouses(WAREHOUSE_A)
 # initialiseWarehouses(WAREHOUSE_C)
 # initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
-# task1()
-# # printAllWarehouses()
+task1()
+printAllWarehouses()
