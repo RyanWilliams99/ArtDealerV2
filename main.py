@@ -61,7 +61,7 @@ def initialiseWarehouses(warehouseNumber):
             warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE - warehouseData[warehouseNumber][
                 WAREHOUSE_VALUE]
         #Shapes Allowed
-        warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 3
+        warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 5
         warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE_WEIGHT] = 1000
         warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID] = 10
         warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID_WEIGHT] = 2000
@@ -118,9 +118,9 @@ def printAllWarehouses():
 
 def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
     if warehouseData[warehouseNumber][getShapeNumber(shape)] > 0: #good if true
-        print("Shape allowed in this warehouse")
+        #print("Shape allowed in this warehouse")
         if value < warehouseData[warehouseNumber][WAREHOUSE_SPACE] or value > INSURED_MAX_SINGLE: #good if true
-            print("Item value is low enough")
+            #print("Item value is low enough")
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][0] = itemNumber
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][1] = description
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][2] = value
@@ -130,8 +130,10 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
             warehouseData[warehouseNumber][WAREHOUSE_ITEMS] = warehouseData[warehouseNumber][WAREHOUSE_ITEMS] + 1
         else:
             print("Item value is too much")
+            addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
     else:
         print("Cannot store " + shape + " in Warehouse " + WAREHOUSE_NAMES[warehouseNumber])
+        addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
 
 
 
@@ -192,6 +194,11 @@ def getShapeNumber(passedString):
     if passedString == WAREHOUSE_SHAPES[3]:
         return WAREHOUSE_SQUARE
 
+def getWarehouseNumber(passedString):
+    for x in range(NUMBER_OF_WAREHOUSES):
+        if passedString == WAREHOUSE_NAMES[x]:
+            return x
+
 
 def task1():
     print("Task 1")
@@ -203,17 +210,41 @@ def task1():
                 print("Excluding First Row")
                 addedItems = addedItems + 1
             else:
-                print("Adding item " + row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4])
+                #print("Adding item " + row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4])
                 addNewItem(WAREHOUSE_A, row[0], row[1], int(row[2]), row[3], row[4])
+
+
+def task2():
+    print("Task 2")
+    addedItems = 0
+    with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 2.csv') as csvFile:
+        csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
+        for row in csv_reader:  #For every row in csv file
+            if addedItems == 0:
+                print("Excluding First Row")
+                addedItems = addedItems + 1
+            else:
+                print(row[0] + " " + row[1] + " " + row[2])
+                vanMove(int(row[0]), row[1], row[2])
+
+
+def vanMove(itemNumber, currentWarehouse, destinationWarehouse):
+    print("Van Move")
+    for x in range(warehouseData[getWarehouseNumber(currentWarehouse)][WAREHOUSE_ITEMS]):
+        if warehouse[getWarehouseNumber(currentWarehouse)][x] == itemNumber:
+            print("Found item" + warehouse[getWarehouseNumber(currentWarehouse)][x])
+
+
 
 
 
 
 
 initialiseWarehouses(WAREHOUSE_A)
-# initialiseWarehouses(WAREHOUSE_B)
-# initialiseWarehouses(WAREHOUSE_C)
-# initialiseWarehouses(WAREHOUSE_D)
+initialiseWarehouses(WAREHOUSE_B)
+initialiseWarehouses(WAREHOUSE_C)
+initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
 task1()
 printAllWarehouses()
+task2()
