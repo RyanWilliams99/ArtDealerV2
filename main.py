@@ -136,63 +136,11 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
         addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
 
 
-
-
-
-
-
-
-    # #Updates overall capacity value as it is used to determine if there is enough space in any warehouse
-    # overallCapacity = warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE] + \
-    #                   warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]
-    # print("Adding " + str(description) + " to Warehouse " + WAREHOUSE_NAMES[warehouseNumber] + "...")
-    # if value > INSURED_MAX_SINGLE: #Print error and return 0 if value over 2000000000
-    #     print("ERROR - Value is higher than the total insured value of a single warehouse")
-    #     return 0
-    # if value > overallCapacity: #Print error and return 0 if impossible to store this item without removing others
-    #     print("ERROR - Remaining storage capacity across all 4 warehouse is less than the current item value\n"
-    #           "Some items will have to be removed to store this item")
-    #     return 0
-    # if value == INSURED_MAX_SINGLE: #Prompts user that a whole warehouse is needed
-    #     print("An entire warehouse will be needed to store this item")
-    #     #identify_items_to_be_moved(warehouseNumber, itemNumber, description, value)
-    #     return 0
-    # if (value > warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE]) & (value > warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE]) & \
-    #    (value > warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE]) & (value > warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]):
-    #     print("No warehouse currently has space")#Tells user no space is available then calls identify_items_to_be_moved
-    #     #identify_items_to_be_moved(warehouseNumber,itemNumber,description,value)
-    #     return  0
-    # if (warehouseData[warehouseNumber][getShapeNumber(shape)] > 0):
-    #     print("ITEM CAN GO IN THIS WAREHOUSE")
-    #     if warehouseData[warehouseNumber][WAREHOUSE_SPACE] >= value:
-    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][0] = itemNumber
-    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][1] = description
-    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][2] = value
-    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][3] = shape
-    #         warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][4] = weight
-    #         warehouseData[warehouseNumber][WAREHOUSE_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_SPACE] - value
-    #         warehouseData[warehouseNumber][WAREHOUSE_ITEMS] = warehouseData[warehouseNumber][WAREHOUSE_ITEMS] + 1
-    #         warehouseData[warehouseNumber][getShapeNumber(shape)] -= 1
-    #         print("Successfully added " + description + " to warehouse {}, Warehouse {} at {}% capacity"
-    #               .format(WAREHOUSE_NAMES[warehouseNumber], WAREHOUSE_NAMES[warehouseNumber],
-    #                       round((100 - warehouseData[warehouseNumber][WAREHOUSE_SPACE] / INSURED_MAX_SINGLE * 100), 2)))
-    # else:
-    #     print("Wrong shape for this warehouse OR not allowed any more of that shape")
-    #
-    #
-    # # else: #Identifys items to move if enough space overall but not in this warehouse
-    # #     #identify_items_to_be_moved(warehouseNumber, itemNumber, description, value)
-
-
 def getShapeNumber(passedString):
-    if passedString == WAREHOUSE_SHAPES[0]:
-        return WAREHOUSE_RECTANGLE
-    if passedString == WAREHOUSE_SHAPES[1]:
-        return WAREHOUSE_SPHERE
-    if passedString == WAREHOUSE_SHAPES[2]:
-        return WAREHOUSE_PYRAMID
-    if passedString == WAREHOUSE_SHAPES[3]:
-        return WAREHOUSE_SQUARE
+    for x in range(NUMBER_OF_WAREHOUSES):
+        if passedString == WAREHOUSE_SHAPES[x]:
+            return x + 5
+
 
 def getWarehouseNumber(passedString):
     for x in range(NUMBER_OF_WAREHOUSES):
@@ -214,29 +162,51 @@ def task1():
                 addNewItem(WAREHOUSE_A, row[0], row[1], int(row[2]), row[3], row[4])
 
 
-def task2():
-    print("Task 2")
+def task2a():
+    print("Task 2a")
     addedItems = 0
+    currentVanValue = 0
+    daysToRelocate = 0
+
     with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 2.csv') as csvFile:
         csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
         for row in csv_reader:  #For every row in csv file
             if addedItems == 0:
-                print("Excluding First Row")
                 addedItems = addedItems + 1
             else:
+                daysToRelocate += 1
+        print("Ignoring Insurance value and shape of items it will take " + str(daysToRelocate) + " days to move items")
+
+
+def task2b(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
+    print("Task 2")
+    addedItems = 0
+    currentVanValue = 0
+    moveList = [[0 for x in range(10)] for x in range(3)]
+    with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 2.csv') as csvFile:
+        csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
+        for row in csv_reader:  #For every row in csv file
+            if addedItems == 0:
+                addedItems = addedItems + 1
+            else:
+                addedItems = addedItems + 1
+                moveList[addedItems][0] = row[0]
+                # moveList[addedItems][1] = row[1]
+                # moveList[addedItems][2] = row[2]
                 print(row[0] + " " + row[1] + " " + row[2])
-                vanMove(int(row[0]), row[1], row[2])
+        print(moveList)
 
 
-def vanMove(itemNumber, currentWarehouse, destinationWarehouse):
+
+def vanMove(currentVanValue, itemNumber, currentWarehouse, destinationWarehouse):
     print("Van Move")
+
     for x in range(warehouseData[getWarehouseNumber(currentWarehouse)][WAREHOUSE_ITEMS]):
-        if warehouse[getWarehouseNumber(currentWarehouse)][x] == itemNumber:
-            print("Found item" + warehouse[getWarehouseNumber(currentWarehouse)][x])
-
-
-
-
+        if int(warehouse[getWarehouseNumber(currentWarehouse)][x][0]) == int(itemNumber):
+            print("Found item" + str(warehouse[getWarehouseNumber(currentWarehouse)][x][0]) + " Has value " + str(warehouse[getWarehouseNumber(currentWarehouse)][x][2]))
+            if currentVanValue + int(warehouse[getWarehouseNumber(currentWarehouse)][x][2]) > 150000000:
+                currentVanValue += int(warehouse[getWarehouseNumber(currentWarehouse)][x][2])
+                print("Current Value " + str(currentVanValue))
 
 
 
@@ -247,4 +217,5 @@ initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
 task1()
 printAllWarehouses()
-task2()
+task2a()
+task2b()
