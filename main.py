@@ -147,6 +147,10 @@ def getWarehouseNumber(passedString):
         if passedString == WAREHOUSE_NAMES[x]:
             return x
 
+def getItemValue(warehouse, itemNumber):
+    for x in range(warehouseData[getWarehouseNumber(warehouse)][WAREHOUSE_ITEMS]):
+        if int(warehouse[getWarehouseNumber(warehouse)][5][0]) == int(itemNumber):
+            return warehouse[getWarehouseNumber(warehouse)][x][2]
 
 def task1():
     print("Task 1")
@@ -182,19 +186,25 @@ def task2b(): # Calculate number of days whilst taking into account van can only
     print("Task 2")
     addedItems = 0
     currentVanValue = 0
-    moveList = [[0 for x in range(10)] for x in range(3)]
+    moveList = [[0 for x in range(3)] for x in range(10)]
     with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 2.csv') as csvFile:
         csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
         for row in csv_reader:  #For every row in csv file
             if addedItems == 0:
-                addedItems = addedItems + 1
+                addedItems += 1
             else:
-                addedItems = addedItems + 1
-                moveList[addedItems][0] = row[0]
-                # moveList[addedItems][1] = row[1]
-                # moveList[addedItems][2] = row[2]
+                moveList[addedItems - 1][0] = row[0]
+                moveList[addedItems - 1][1] = row[1]
+                moveList[addedItems - 1][2] = row[2]
+                addedItems += 1
                 print(row[0] + " " + row[1] + " " + row[2])
         print(moveList)
+        for x in range(9):
+            if moveList[x][1] == moveList[x + 1][1]:
+                print("Possible double move" + moveList[x][0])
+                print(getItemValue(moveList[x][1], moveList[x][0]))
+
+
 
 
 
