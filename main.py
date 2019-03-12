@@ -215,15 +215,11 @@ def task2b(): # Calculate number of days whilst taking into account van can only
                 print(row[0] + " " + row[1] + " " + row[2])
         print(moveList)
         for x in range(9):
-            if moveList[x][1] == moveList[x + 1][1] and moveList[x][2] == moveList[x + 1][2]:
-                # Now should see if can do 2 items in one move because value is less than 1.5bn and less than 2000kg
-                print("Possible double move item " + str(moveList[x][0]) + " and item " + str(moveList[x + 1][0]) + " Going to from warehouse " + str(moveList[x][1]) + " To warehouse " + str(moveList[x][2]))
-                value1 = int(getItemValue(getWarehouseNumber(moveList[x][1]),int(moveList[x][0])))
-                value2 = int(getItemValue(getWarehouseNumber(moveList[x + 1][1]),int(moveList[x + 1][0])))
-                currentVanValue = value1 + value2
-                weight = getItemWeight(getWarehouseNumber(moveList[x][1]),int(moveList[x][0]))
-                #print("Value of item " + str(cvalue) + " Weight of Item " + str(weight))
-                if int(currentVanValue) < 1500000000 and currentVanWeight < 2000:
+            for y in range(9):
+                if moveList[x][1] == moveList[y][1] and moveList[x][2] == moveList[y][2] and moveList[x][0] != moveList[y][0]:
+                    print("Possible double move item " + str(moveList[x][0]) + " and item " + str(
+                                 moveList[y][0]) + " Going to from warehouse " + str(moveList[x][1]) + " To warehouse " + str(
+                                 moveList[y][2]))
                     currentDaysToRelocate -= 1
         print("To move items considering weight capacity and value capacity of van it will take " + str(currentDaysToRelocate) + " Days")
 
@@ -234,7 +230,22 @@ initialiseWarehouses(WAREHOUSE_B)
 initialiseWarehouses(WAREHOUSE_C)
 initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
-task1()
-printAllWarehouses()
-task2a()
-task2b()
+# task1()
+# printAllWarehouses()
+# task2a()
+# task2b()
+
+
+#
+# if moveList[x][1] == moveList[x + 1][1] and moveList[x][2] == moveList[x + 1][2]:
+#     # Now should see if can do 2 items in one move because value is less than 1.5bn and less than 2000kg
+#     print("Possible double move item " + str(moveList[x][0]) + " and item " + str(
+#         moveList[x + 1][0]) + " Going to from warehouse " + str(moveList[x][1]) + " To warehouse " + str(
+#         moveList[x][2]))
+#     value1 = int(getItemValue(getWarehouseNumber(moveList[x][1]), int(moveList[x][0])))
+#     value2 = int(getItemValue(getWarehouseNumber(moveList[x + 1][1]), int(moveList[x + 1][0])))
+#     currentVanValue = value1 + value2
+#     weight = getItemWeight(getWarehouseNumber(moveList[x][1]), int(moveList[x][0]))
+#     # print("Value of item " + str(cvalue) + " Weight of Item " + str(weight))
+#     if int(currentVanValue) < 1500000000 and currentVanWeight < 2000:
+#
