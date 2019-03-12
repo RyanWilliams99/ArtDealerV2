@@ -109,7 +109,7 @@ def printAllWarehouses():
         print(" Rectangle: " + str(warehouseData[y][WAREHOUSE_RECTANGLE]) + " x " + str(warehouseData[y][WAREHOUSE_RECTANGLE_WEIGHT]) + "kg")
         print(" Sphere: " + str(warehouseData[y][WAREHOUSE_SPHERE]) + " x " + str(warehouseData[y][WAREHOUSE_SPHERE_WEIGHT]) + "kg")
         print(" Pyramid: " + str(warehouseData[y][WAREHOUSE_PYRAMID]) + " x " + str(warehouseData[y][WAREHOUSE_PYRAMID_WEIGHT]) + "kg")
-        print(" Square: " + str(warehouseData[y][WAREHOUSE_SQUARE]) + " x " + str(warehouseData[y][WAREHOUSE_SQUARE_WEIGHT]) + "kg")
+        print(" Square: " + str(warehouseData[y][WAREHOUSE_SQUARE]) + " x " + str(warehouseData[y][WAREHOUSE_SQUARE_WEIGHT]) + "kg\n")
     #Calculate and prints the capacty of all warehouses combined
     overallCapacity = warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE] + \
                       warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]
