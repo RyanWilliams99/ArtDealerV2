@@ -147,10 +147,22 @@ def getWarehouseNumber(passedString):
         if passedString == WAREHOUSE_NAMES[x]:
             return x
 
-def getItemValue(warehouse, itemNumber):
-    for x in range(warehouseData[getWarehouseNumber(warehouse)][WAREHOUSE_ITEMS]):
-        if int(warehouse[getWarehouseNumber(warehouse)][5][0]) == int(itemNumber):
-            return warehouse[getWarehouseNumber(warehouse)][x][2]
+def getItemValue(warehouseNumber, itemNumber):
+    for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
+        if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
+            return warehouse[warehouseNumber][x][2]
+    print("Cant Find")
+
+
+
+def getItemWeight(warehouseNumber, itemNumber):
+    for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
+        if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
+            return warehouse[warehouseNumber][x][4]
+    print("Cant Find")
+
+
+
 
 def task1():
     print("Task 1")
@@ -180,12 +192,15 @@ def task2a():
             else:
                 daysToRelocate += 1
         print("Ignoring Insurance value and shape of items it will take " + str(daysToRelocate) + " days to move items")
+        return daysToRelocate
 
 
 def task2b(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
     print("Task 2")
     addedItems = 0
     currentVanValue = 0
+    currentVanWeight = 0
+    currentDaysToRelocate = task2a()
     moveList = [[0 for x in range(3)] for x in range(10)]
     with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 2.csv') as csvFile:
         csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
@@ -200,23 +215,17 @@ def task2b(): # Calculate number of days whilst taking into account van can only
                 print(row[0] + " " + row[1] + " " + row[2])
         print(moveList)
         for x in range(9):
-            if moveList[x][1] == moveList[x + 1][1]:
-                print("Possible double move" + moveList[x][0])
-                print(getItemValue(moveList[x][1], moveList[x][0]))
-
-
-
-
-
-def vanMove(currentVanValue, itemNumber, currentWarehouse, destinationWarehouse):
-    print("Van Move")
-
-    for x in range(warehouseData[getWarehouseNumber(currentWarehouse)][WAREHOUSE_ITEMS]):
-        if int(warehouse[getWarehouseNumber(currentWarehouse)][x][0]) == int(itemNumber):
-            print("Found item" + str(warehouse[getWarehouseNumber(currentWarehouse)][x][0]) + " Has value " + str(warehouse[getWarehouseNumber(currentWarehouse)][x][2]))
-            if currentVanValue + int(warehouse[getWarehouseNumber(currentWarehouse)][x][2]) > 150000000:
-                currentVanValue += int(warehouse[getWarehouseNumber(currentWarehouse)][x][2])
-                print("Current Value " + str(currentVanValue))
+            if moveList[x][1] == moveList[x + 1][1] and moveList[x][2] == moveList[x + 1][2]:
+                # Now should see if can do 2 items in one move because value is less than 1.5bn and less than 2000kg
+                print("Possible double move item " + str(moveList[x][0]) + " and item " + str(moveList[x + 1][0]) + " Going to from warehouse " + str(moveList[x][1]) + " To warehouse " + str(moveList[x][2]))
+                value1 = int(getItemValue(getWarehouseNumber(moveList[x][1]),int(moveList[x][0])))
+                value2 = int(getItemValue(getWarehouseNumber(moveList[x + 1][1]),int(moveList[x + 1][0])))
+                currentVanValue = value1 + value2
+                weight = getItemWeight(getWarehouseNumber(moveList[x][1]),int(moveList[x][0]))
+                #print("Value of item " + str(cvalue) + " Weight of Item " + str(weight))
+                if int(currentVanValue) < 1500000000 and currentVanWeight < 2000:
+                    currentDaysToRelocate -= 1
+        print("To move items considering weight capacity and value capacity of van it will take " + str(currentDaysToRelocate) + " Days")
 
 
 
