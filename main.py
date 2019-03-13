@@ -42,52 +42,42 @@ overallCapacity = 0
 
 #Initialises a warehouse takes a int warehouse number as paramater
 def initialiseWarehouses(warehouseNumber):
-    #for x in range(NUMBER_OF_WAREHOUSES):
-        with open('DADSA Assignment 2018-19 PART B Warehouse ' + WAREHOUSE_NAMES[warehouseNumber] + '.csv') as csvFile:
-            csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
-            for row in csv_reader:  # For every row in csv file
-                if warehouseData[warehouseNumber][WAREHOUSE_ITEMS] == 0:  # This excludes the first row of the file
-                    warehouseData[warehouseNumber][WAREHOUSE_ITEMS] += 1
-                else:
-                    for x in range(COLUMNS_IN_CSV):  # For every column in csv file store value in warehouse list
-                        warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS] - 1][x] = row[x]
-                    warehouseData[warehouseNumber][WAREHOUSE_ITEMS] += 1
-                    print(row[3])
+    warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 5
+    warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE_WEIGHT] = 1000
+    warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID] = 10
+    warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID_WEIGHT] = 2000
+    warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE] = 5
+    warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE_WEIGHT] = 2000
 
-            warehouseData[warehouseNumber][WAREHOUSE_ITEMS] -= 1  # Used so the value displayed is correct for the user
-            for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):  # Calculating Value of warehouse
-                warehouseData[warehouseNumber][WAREHOUSE_VALUE] = warehouseData[warehouseNumber][WAREHOUSE_VALUE] + int(warehouse[warehouseNumber][x][2])
-            # Calculating space left in warehouse
-            warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE - warehouseData[warehouseNumber][
-                WAREHOUSE_VALUE]
-        #Shapes Allowed
-        warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 5
-        warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE_WEIGHT] = 1000
-        warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID] = 10
-        warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID_WEIGHT] = 2000
-        warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE] = 5
-        warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE_WEIGHT] = 2000
+    warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE] = 10
+    warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE_WEIGHT] = 500
+    warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE] = 5
+    warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE_WEIGHT] = 2000
+    warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID] = 10
+    warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID_WEIGHT] = 250
 
-        warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE] = 10
-        warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE_WEIGHT] = 500
-        warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE] = 5
-        warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE_WEIGHT] = 2000
-        warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID] = 10
-        warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID_WEIGHT] = 250
+    warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE] = 15
+    warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE_WEIGHT] = 250
+    warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID] = 5
+    warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID_WEIGHT] = 500
 
-        warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE] = 15
-        warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE_WEIGHT] = 250
-        warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID] = 5
-        warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID_WEIGHT] = 500
-
-        warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE] = 10
-        warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE_WEIGHT] = 500
-        warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE] = 2
-        warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE_WEIGHT] = 750
-        warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID] = 2
-        warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID_WEIGHT] = 3000
-        warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE] = 10
-        warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE_WEIGHT] = 750
+    warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE] = 10
+    warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE_WEIGHT] = 500
+    warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE] = 2
+    warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE_WEIGHT] = 750
+    warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID] = 2
+    warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID_WEIGHT] = 3000
+    warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE] = 10
+    warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE_WEIGHT] = 750
+    warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE
+    with open('DADSA Assignment 2018-19 PART B Warehouse ' + WAREHOUSE_NAMES[warehouseNumber] + '.csv') as csvFile:
+        csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
+        for row in csv_reader:  # For every row in csv file
+            if row[0] != 'Item No.':  # This excludes the first row of the file
+                addNewItem(warehouseNumber, int(row[0]), str(row[1]), int(row[2]), str(row[3]), int(row[4]))
+        for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):  # Calculating Value of warehouse
+            warehouseData[warehouseNumber][WAREHOUSE_VALUE] = warehouseData[warehouseNumber][WAREHOUSE_VALUE] + int(warehouse[warehouseNumber][x][2])
+        warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE - warehouseData[warehouseNumber][WAREHOUSE_VALUE]
 
 
 def printAllWarehouses():
@@ -117,17 +107,15 @@ def printAllWarehouses():
 
 
 def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
-    if warehouseData[warehouseNumber][getShapeNumber(shape)] > 0: #good if true
-        #print("Shape allowed in this warehouse")
-        if value < warehouseData[warehouseNumber][WAREHOUSE_SPACE] or value > INSURED_MAX_SINGLE: #good if true
-            #print("Item value is low enough")
+    if warehouseData[warehouseNumber][getShapeNumber(shape)] > 0: #Good if true
+        if value < warehouseData[warehouseNumber][WAREHOUSE_SPACE] and value < INSURED_MAX_SINGLE: #value is less than space, or
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][0] = itemNumber
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][1] = description
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][2] = value
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][3] = shape
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][4] = weight
             warehouseData[warehouseNumber][WAREHOUSE_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_SPACE] - value
-            warehouseData[warehouseNumber][WAREHOUSE_ITEMS] = warehouseData[warehouseNumber][WAREHOUSE_ITEMS] + 1
+            warehouseData[warehouseNumber][WAREHOUSE_ITEMS] += 1
         else:
             print("Item value is too much")
             addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
@@ -137,9 +125,14 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
 
 
 def getShapeNumber(passedString):
-    for x in range(NUMBER_OF_WAREHOUSES):
-        if passedString == WAREHOUSE_SHAPES[x]:
-            return x + 5
+    if passedString == 'Rectangle':
+        return WAREHOUSE_RECTANGLE
+    if passedString == 'Sphere':
+        return WAREHOUSE_SPHERE
+    if passedString == 'Pyramid':
+        return WAREHOUSE_PYRAMID
+    if passedString == 'Square':
+        return WAREHOUSE_SQUARE
 
 
 def getWarehouseNumber(passedString):
@@ -153,16 +146,11 @@ def getItemValue(warehouseNumber, itemNumber):
             return warehouse[warehouseNumber][x][2]
     print("Cant Find")
 
-
-
 def getItemWeight(warehouseNumber, itemNumber):
     for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
         if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
             return warehouse[warehouseNumber][x][4]
     print("Cant Find")
-
-
-
 
 def task1():
     print("Task 1")
@@ -224,19 +212,17 @@ def task2b(): # Calculate number of days whilst taking into account van can only
         print("To move items considering weight capacity and value capacity of van it will take " + str(currentDaysToRelocate) + " Days")
 
 
-
 initialiseWarehouses(WAREHOUSE_A)
 initialiseWarehouses(WAREHOUSE_B)
 initialiseWarehouses(WAREHOUSE_C)
 initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
-# task1()
-# printAllWarehouses()
+task1()
+printAllWarehouses()
 # task2a()
 # task2b()
 
 
-#
 # if moveList[x][1] == moveList[x + 1][1] and moveList[x][2] == moveList[x + 1][2]:
 #     # Now should see if can do 2 items in one move because value is less than 1.5bn and less than 2000kg
 #     print("Possible double move item " + str(moveList[x][0]) + " and item " + str(
@@ -248,4 +234,3 @@ printAllWarehouses()
 #     weight = getItemWeight(getWarehouseNumber(moveList[x][1]), int(moveList[x][0]))
 #     # print("Value of item " + str(cvalue) + " Weight of Item " + str(weight))
 #     if int(currentVanValue) < 1500000000 and currentVanWeight < 2000:
-#
