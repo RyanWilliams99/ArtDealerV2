@@ -6,6 +6,7 @@ import csv
 
 #Defining constants
 INSURED_MAX_SINGLE = 2000000000
+INSURED_VAN = 2000000000 * 0.75
 INSURED_MAX_MULTIPLE = 8000000000
 #Used when accessing the warehouse list
 WAREHOUSE_A = 0
@@ -40,35 +41,36 @@ warehouse = [[[0 for j in range(COLUMNS_IN_CSV)] for i in range(MAX_NUMBER_OF_IT
 warehouseData = warehouseA = [[0 for x in range(11)] for y in range(NUMBER_OF_WAREHOUSES)]
 overallCapacity = 0
 
+warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 5
+warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE_WEIGHT] = 1000
+warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID] = 10
+warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID_WEIGHT] = 2000
+warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE] = 5
+warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE_WEIGHT] = 2000
+
+warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE] = 10
+warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE_WEIGHT] = 500
+warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE] = 5
+warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE_WEIGHT] = 2000
+warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID] = 10
+warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID_WEIGHT] = 250
+
+warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE] = 15
+warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE_WEIGHT] = 250
+warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID] = 5
+warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID_WEIGHT] = 500
+
+warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE] = 10
+warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE_WEIGHT] = 500
+warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE] = 2
+warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE_WEIGHT] = 750
+warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID] = 2
+warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID_WEIGHT] = 3000
+warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE] = 10
+warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE_WEIGHT] = 750
+
 #Initialises a warehouse takes a int warehouse number as paramater
 def initialiseWarehouses(warehouseNumber):
-    warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE] = 5
-    warehouseData[WAREHOUSE_A][WAREHOUSE_RECTANGLE_WEIGHT] = 1000
-    warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID] = 10
-    warehouseData[WAREHOUSE_A][WAREHOUSE_PYRAMID_WEIGHT] = 2000
-    warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE] = 5
-    warehouseData[WAREHOUSE_A][WAREHOUSE_SQUARE_WEIGHT] = 2000
-
-    warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE] = 10
-    warehouseData[WAREHOUSE_B][WAREHOUSE_RECTANGLE_WEIGHT] = 500
-    warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE] = 5
-    warehouseData[WAREHOUSE_B][WAREHOUSE_SPHERE_WEIGHT] = 2000
-    warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID] = 10
-    warehouseData[WAREHOUSE_B][WAREHOUSE_PYRAMID_WEIGHT] = 250
-
-    warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE] = 15
-    warehouseData[WAREHOUSE_C][WAREHOUSE_SPHERE_WEIGHT] = 250
-    warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID] = 5
-    warehouseData[WAREHOUSE_C][WAREHOUSE_PYRAMID_WEIGHT] = 500
-
-    warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE] = 10
-    warehouseData[WAREHOUSE_D][WAREHOUSE_RECTANGLE_WEIGHT] = 500
-    warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE] = 2
-    warehouseData[WAREHOUSE_D][WAREHOUSE_SPHERE_WEIGHT] = 750
-    warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID] = 2
-    warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID_WEIGHT] = 3000
-    warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE] = 10
-    warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE_WEIGHT] = 750
     warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE
     with open('DADSA Assignment 2018-19 PART B Warehouse ' + WAREHOUSE_NAMES[warehouseNumber] + '.csv') as csvFile:
         csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
@@ -94,8 +96,8 @@ def printAllWarehouses():
     print("No. of items in all warehouses\nA -" ,warehouseData[WAREHOUSE_A][WAREHOUSE_ITEMS], "B -" ,warehouseData[WAREHOUSE_B][WAREHOUSE_ITEMS]
                                          ,"C -" ,warehouseData[WAREHOUSE_C][WAREHOUSE_ITEMS], "D -" ,warehouseData[WAREHOUSE_D][WAREHOUSE_ITEMS],"\n")
     for y in range(NUMBER_OF_WAREHOUSES): #Prints percentage space used in each warehouse
-        print('Warehouse {} at {}% capacity'.format(WAREHOUSE_NAMES[y],round((100 - warehouseData[y][WAREHOUSE_SPACE] / INSURED_MAX_SINGLE * 100),4)))
-        print("Storage for Warehouse " + WAREHOUSE_NAMES[y])
+        print('Warehouse {} at {}% Insurance capacity'.format(WAREHOUSE_NAMES[y],round((100 - warehouseData[y][WAREHOUSE_SPACE] / INSURED_MAX_SINGLE * 100),4)))
+        print("Remaining Storage Types for Warehouse " + WAREHOUSE_NAMES[y])
         print(" Rectangle: " + str(warehouseData[y][WAREHOUSE_RECTANGLE]) + " x " + str(warehouseData[y][WAREHOUSE_RECTANGLE_WEIGHT]) + "kg")
         print(" Sphere: " + str(warehouseData[y][WAREHOUSE_SPHERE]) + " x " + str(warehouseData[y][WAREHOUSE_SPHERE_WEIGHT]) + "kg")
         print(" Pyramid: " + str(warehouseData[y][WAREHOUSE_PYRAMID]) + " x " + str(warehouseData[y][WAREHOUSE_PYRAMID_WEIGHT]) + "kg")
@@ -103,7 +105,7 @@ def printAllWarehouses():
     #Calculate and prints the capacty of all warehouses combined
     overallCapacity = warehouseData[WAREHOUSE_A][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_B][WAREHOUSE_SPACE] + \
                       warehouseData[WAREHOUSE_C][WAREHOUSE_SPACE] + warehouseData[WAREHOUSE_D][WAREHOUSE_SPACE]
-    print('Storage capacity across all 4 Warehouses is at {}%\n'.format(round((100 - overallCapacity/INSURED_MAX_MULTIPLE * 100),4)))
+    print('Insurance Value across all 4 Warehouses is at {}%\n'.format(round((100 - overallCapacity/INSURED_MAX_MULTIPLE * 100),4)))
 
 
 def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
@@ -116,6 +118,7 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
             warehouse[warehouseNumber][warehouseData[warehouseNumber][WAREHOUSE_ITEMS]][4] = weight
             warehouseData[warehouseNumber][WAREHOUSE_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_SPACE] - value
             warehouseData[warehouseNumber][WAREHOUSE_ITEMS] += 1
+            warehouseData[warehouseNumber][getShapeNumber(shape)] -= 1
         else:
             print("Item value is too much")
             addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
@@ -145,12 +148,14 @@ def getItemValue(warehouseNumber, itemNumber):
         if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
             return warehouse[warehouseNumber][x][2]
     print("Cant Find")
+    return 1
 
 def getItemWeight(warehouseNumber, itemNumber):
     for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
         if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
             return warehouse[warehouseNumber][x][4]
     print("Cant Find")
+    return 1
 
 def task1():
     print("Task 1")
@@ -167,7 +172,7 @@ def task1():
 
 
 def task2a():
-    print("Task 2a")
+    print("-------------------------Task 2a---------------------------")
     addedItems = 0
     currentVanValue = 0
     daysToRelocate = 0
@@ -184,32 +189,53 @@ def task2a():
 
 
 def task2b(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
-    print("Task 2")
-    addedItems = 0
-    currentVanValue = 0
-    currentVanWeight = 0
-    currentDaysToRelocate = task2a()
-    moveList = [[0 for x in range(3)] for x in range(10)]
+    #ITEM 15108 IS IN A NOT B ????
+    print("-------------------------Task 2b----------------------------")
+    vanSchedule = [['N/A' for x in range(10)] for x in range(15)]
+    vanScheduleItems = 0
+    FROM = 0
+    TO = 1
+    NUMBEROFITEMS = 2
+    VANVALUE = 3
+    VANWEIGHT = 4
+    ITEM = 5
     with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 2.csv') as csvFile:
-        csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
-        for row in csv_reader:  #For every row in csv file
-            if addedItems == 0:
-                addedItems += 1
-            else:
-                moveList[addedItems - 1][0] = row[0]
-                moveList[addedItems - 1][1] = row[1]
-                moveList[addedItems - 1][2] = row[2]
-                addedItems += 1
-                print(row[0] + " " + row[1] + " " + row[2])
-        print(moveList)
-        for x in range(9):
-            for y in range(9):
-                if moveList[x][1] == moveList[y][1] and moveList[x][2] == moveList[y][2] and moveList[x][0] != moveList[y][0]:
-                    print("Possible double move item " + str(moveList[x][0]) + " and item " + str(
-                                 moveList[y][0]) + " Going to from warehouse " + str(moveList[x][1]) + " To warehouse " + str(
-                                 moveList[y][2]))
-                    currentDaysToRelocate -= 1
-        print("To move items considering weight capacity and value capacity of van it will take " + str(currentDaysToRelocate) + " Days")
+        csv_reader = csv.reader(csvFile, delimiter=',')
+        for row in csv_reader:
+            if row[0] != 'ITEM':
+                vanSchedule[vanScheduleItems][FROM] = row[1]
+                vanSchedule[vanScheduleItems][TO] = row[2]
+                vanSchedule[vanScheduleItems][NUMBEROFITEMS] = 1
+                vanSchedule[vanScheduleItems][ITEM] = row[0]
+                vanSchedule[vanScheduleItems][VANVALUE] = getItemValue(getWarehouseNumber(row[1]),row[0])
+                vanSchedule[vanScheduleItems][VANWEIGHT] = getItemWeight(getWarehouseNumber(row[1]), row[0])
+                vanScheduleItems += 1
+    for x in range(10):
+        for y in range(10):
+            if vanSchedule[x][FROM] == vanSchedule[y][FROM] and vanSchedule[x][TO] == vanSchedule[y][TO] and vanSchedule[x][ITEM] != vanSchedule[y][ITEM]:
+                if vanSchedule[x][VANVALUE] + getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < INSURED_VAN:
+                    if vanSchedule[x][VANWEIGHT] + getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < 2000:
+                        #print("Found match between " + str(vanSchedule[x]) + " " + str(vanSchedule[y]))
+                        vanSchedule[x][NUMBEROFITEMS] += 1
+                        vanSchedule[x][FROM] = vanSchedule[y][FROM]
+                        vanSchedule[x][TO] = vanSchedule[y][TO]
+                        vanSchedule[x][vanSchedule[x][NUMBEROFITEMS] + 4] = vanSchedule[y][ITEM]
+                        vanSchedule[x][VANVALUE] += getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM])
+                        vanSchedule[x][VANWEIGHT] += getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]),vanSchedule[y][ITEM])
+                        vanSchedule[y][FROM] = 0
+                        vanSchedule[y][TO] = 0
+                        vanSchedule[y][ITEM] = 0
+
+    print(" __________________________________________________________________________________"
+        "\n|____________________________________Van Schedule__________________________________|"
+        "\n| From | To | No. Items | Total Value | Total Weight | Item(s)                     |")
+    for x in range(10):
+        if vanSchedule[x][0] != 0:
+            print(
+          "| {:<4} |".format(vanSchedule[x][0]),"{:<2} |".format(vanSchedule[x][1]),"{:<9} |".format(vanSchedule[x][2]),
+                "{:<10}  |".format(vanSchedule[x][3]),"{:<12} |".format(vanSchedule[x][4]),"{:<7} |".format(vanSchedule[x][5]),
+                "{:<7} |".format(vanSchedule[x][6]),"{:<7} |".format(vanSchedule[x][7]))
+    print("|______|____|___________|_____________|______________|_____________________________|")
 
 
 initialiseWarehouses(WAREHOUSE_A)
@@ -219,18 +245,6 @@ initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
 task1()
 printAllWarehouses()
-# task2a()
-# task2b()
-
-
-# if moveList[x][1] == moveList[x + 1][1] and moveList[x][2] == moveList[x + 1][2]:
-#     # Now should see if can do 2 items in one move because value is less than 1.5bn and less than 2000kg
-#     print("Possible double move item " + str(moveList[x][0]) + " and item " + str(
-#         moveList[x + 1][0]) + " Going to from warehouse " + str(moveList[x][1]) + " To warehouse " + str(
-#         moveList[x][2]))
-#     value1 = int(getItemValue(getWarehouseNumber(moveList[x][1]), int(moveList[x][0])))
-#     value2 = int(getItemValue(getWarehouseNumber(moveList[x + 1][1]), int(moveList[x + 1][0])))
-#     currentVanValue = value1 + value2
-#     weight = getItemWeight(getWarehouseNumber(moveList[x][1]), int(moveList[x][0]))
-#     # print("Value of item " + str(cvalue) + " Weight of Item " + str(weight))
-#     if int(currentVanValue) < 1500000000 and currentVanWeight < 2000:
+task2a()
+print(warehouseData)
+task2b()
