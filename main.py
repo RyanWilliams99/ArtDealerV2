@@ -145,16 +145,17 @@ def getWarehouseNumber(passedString):
 
 def getItemValue(warehouseNumber, itemNumber):
     for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
-        if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
+        if int(itemNumber) == int(warehouse[warehouseNumber][x][0]):
             return warehouse[warehouseNumber][x][2]
-    print("Cant Find")
+    print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
     return 1
 
 def getItemWeight(warehouseNumber, itemNumber):
     for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
         if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
+            print("Found " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
             return warehouse[warehouseNumber][x][4]
-    print("Cant Find")
+    print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
     return 1
 
 def task1():
@@ -215,7 +216,6 @@ def task2b(): # Calculate number of days whilst taking into account van can only
             if vanSchedule[x][FROM] == vanSchedule[y][FROM] and vanSchedule[x][TO] == vanSchedule[y][TO] and vanSchedule[x][ITEM] != vanSchedule[y][ITEM]:
                 if vanSchedule[x][VANVALUE] + getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < INSURED_VAN:
                     if vanSchedule[x][VANWEIGHT] + getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < 2000:
-                        #print("Found match between " + str(vanSchedule[x]) + " " + str(vanSchedule[y]))
                         vanSchedule[x][NUMBEROFITEMS] += 1
                         vanSchedule[x][FROM] = vanSchedule[y][FROM]
                         vanSchedule[x][TO] = vanSchedule[y][TO]
@@ -233,18 +233,68 @@ def task2b(): # Calculate number of days whilst taking into account van can only
         if vanSchedule[x][0] != 0:
             print(
           "| {:<4} |".format(vanSchedule[x][0]),"{:<2} |".format(vanSchedule[x][1]),"{:<9} |".format(vanSchedule[x][2]),
-                "{:<10}  |".format(vanSchedule[x][3]),"{:<12} |".format(vanSchedule[x][4]),"{:<7} |".format(vanSchedule[x][5]),
-                "{:<7} |".format(vanSchedule[x][6]),"{:<7} |".format(vanSchedule[x][7]))
+          "{:<10}  |".format(vanSchedule[x][3]),"{:<12} |".format(vanSchedule[x][4]),"{:<7} |".format(vanSchedule[x][5]),
+          "{:<7} |".format(vanSchedule[x][6]),"{:<7} |".format(vanSchedule[x][7]))
     print("|______|____|___________|_____________|______________|_____________________________|")
 
-
+def task3(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
+    #ITEM 15108 IS IN A NOT B ????
+    print("-------------------------Task 3----------------------------")
+    CSV_LENGTH = 17
+    vanSchedule = [['N/A' for x in range(10)] for x in range(CSV_LENGTH)]
+    vanScheduleItems = 0
+    FROM = 0
+    TO = 1
+    NUMBEROFITEMS = 2
+    VANVALUE = 3
+    VANWEIGHT = 4
+    ITEM = 5
+    with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 3 AND 4.csv') as csvFile:
+        csv_reader = csv.reader(csvFile, delimiter=',')
+        for row in csv_reader:
+            if row[0] != 'ITEM':
+                vanSchedule[vanScheduleItems][FROM] = row[1]
+                vanSchedule[vanScheduleItems][TO] = row[2]
+                vanSchedule[vanScheduleItems][NUMBEROFITEMS] = 1
+                vanSchedule[vanScheduleItems][ITEM] = row[0]
+                vanSchedule[vanScheduleItems][VANVALUE] = getItemValue(getWarehouseNumber(row[1]),row[0])
+                vanSchedule[vanScheduleItems][VANWEIGHT] = getItemWeight(getWarehouseNumber(row[1]), row[0])
+                vanScheduleItems += 1
+    for x in range(CSV_LENGTH):
+        for y in range(CSV_LENGTH):
+            if vanSchedule[x][FROM] == vanSchedule[y][FROM] and vanSchedule[x][TO] == vanSchedule[y][TO] and vanSchedule[x][ITEM] != vanSchedule[y][ITEM]:
+                if vanSchedule[x][VANVALUE] + getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < INSURED_VAN:
+                    if vanSchedule[x][VANWEIGHT] + getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < 2000:
+                        vanSchedule[x][NUMBEROFITEMS] += 1
+                        vanSchedule[x][FROM] = vanSchedule[y][FROM]
+                        vanSchedule[x][TO] = vanSchedule[y][TO]
+                        vanSchedule[x][vanSchedule[x][NUMBEROFITEMS] + 4] = vanSchedule[y][ITEM]
+                        vanSchedule[x][VANVALUE] += getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM])
+                        vanSchedule[x][VANWEIGHT] += getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]),vanSchedule[y][ITEM])
+                        vanSchedule[y][FROM] = 0
+                        vanSchedule[y][TO] = 0
+                        vanSchedule[y][ITEM] = 0
+                    else:
+                        print("Cant have will be too high WEIGHT")
+                else:
+                    print("Cant have will be too high value")
+    print(" ______________________________________________________________________________________________________"
+        "\n|______________________________________________Van Schedule____________________________________________|"
+        "\n| From | To | No. Items | Total Value | Total Weight | Item(s)                                         |")
+    for x in range(10):
+        if vanSchedule[x][0] != 0:
+            print(
+          "| {:<4} |".format(vanSchedule[x][0]),"{:<2} |".format(vanSchedule[x][1]),"{:<9} |".format(vanSchedule[x][2]),
+          "{:<10}  |".format(vanSchedule[x][3]),"{:<12} |".format(vanSchedule[x][4]),"{:<7} |".format(vanSchedule[x][5]),
+          "{:<7} |".format(vanSchedule[x][6]),"{:<7} |".format(vanSchedule[x][7]),"{:<7} |".format(vanSchedule[x][8]),
+          "{:<7} |".format(vanSchedule[x][9]),)
+    print("|______|____|___________|_____________|______________|_________________________________________________|")
 initialiseWarehouses(WAREHOUSE_A)
 initialiseWarehouses(WAREHOUSE_B)
 initialiseWarehouses(WAREHOUSE_C)
 initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
 task1()
-printAllWarehouses()
-task2a()
-print(warehouseData)
-task2b()
+# task2a()
+# task2b()
+task3()
