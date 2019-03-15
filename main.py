@@ -141,6 +141,7 @@ def getShapeNumber(passedString):
 def getWarehouseNumber(passedString):
     for x in range(NUMBER_OF_WAREHOUSES):
         if passedString == WAREHOUSE_NAMES[x]:
+            print("Was Passed " + passedString + " Returned " + str(x))
             return x
 
 def getItemValue(warehouseNumber, itemNumber):
@@ -211,6 +212,8 @@ def task2b(): # Calculate number of days whilst taking into account van can only
                 vanSchedule[vanScheduleItems][VANVALUE] = getItemValue(getWarehouseNumber(row[1]),row[0])
                 vanSchedule[vanScheduleItems][VANWEIGHT] = getItemWeight(getWarehouseNumber(row[1]), row[0])
                 vanScheduleItems += 1
+    for x in range(10):
+        print(vanSchedule[x])
     for x in range(10):
         for y in range(10):
             if vanSchedule[x][FROM] == vanSchedule[y][FROM] and vanSchedule[x][TO] == vanSchedule[y][TO] and vanSchedule[x][ITEM] != vanSchedule[y][ITEM]:
@@ -289,12 +292,32 @@ def task3(): # Calculate number of days whilst taking into account van can only 
           "{:<7} |".format(vanSchedule[x][6]),"{:<7} |".format(vanSchedule[x][7]),"{:<7} |".format(vanSchedule[x][8]),
           "{:<7} |".format(vanSchedule[x][9]),)
     print("|______|____|___________|_____________|______________|_________________________________________________|")
+
+    col = 2
+    row = 6
+    validRoutes = [[0 for x in range(col)] for x in range(row
+                                                          )]
+    #A-B
+    #A-C
+    #A-D
+    #B-C
+    #B-D
+    #C-D
+
+    #Define possible routes
+    #All vanSchedule must fall into them
+    #
+    #for every row in vanschedule
+    #Fill into one of the routes
+    #
+
+
 initialiseWarehouses(WAREHOUSE_A)
 initialiseWarehouses(WAREHOUSE_B)
 initialiseWarehouses(WAREHOUSE_C)
 initialiseWarehouses(WAREHOUSE_D)
 printAllWarehouses()
 task1()
-# task2a()
-# task2b()
+task2a()
+task2b()
 task3()
