@@ -141,26 +141,26 @@ def getShapeNumber(passedString):
 def getWarehouseNumber(passedString):
     for x in range(NUMBER_OF_WAREHOUSES):
         if passedString == WAREHOUSE_NAMES[x]:
-            print("Was Passed " + passedString + " Returned " + str(x))
+            #print("Was Passed " + passedString + " Returned " + str(x))
             return x
 
 def getItemValue(warehouseNumber, itemNumber):
     for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
         if int(itemNumber) == int(warehouse[warehouseNumber][x][0]):
             return warehouse[warehouseNumber][x][2]
-    print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
+    #print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
     return 1
 
 def getItemWeight(warehouseNumber, itemNumber):
     for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
         if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
-            print("Found " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
+            #print("Found " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
             return warehouse[warehouseNumber][x][4]
-    print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
+    #print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
     return 1
 
 def task1():
-    print("Task 1")
+    print("__________________________________________________Task 1__________________________________________________")
     addedItems = 0
     with open('DADSA Assignment 2018-19 PART B DATA TO INSERT INTO WAREHOUSE A TASK 1.csv') as csvFile:
         csv_reader = csv.reader(csvFile, delimiter=',')  # returns a reader object which is then iterated over
@@ -174,7 +174,7 @@ def task1():
 
 
 def task2a():
-    print("-------------------------Task 2a---------------------------")
+    print("__________________________________________________Task 2a__________________________________________________")
     addedItems = 0
     currentVanValue = 0
     daysToRelocate = 0
@@ -192,7 +192,7 @@ def task2a():
 
 def task2b(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
     #ITEM 15108 IS IN A NOT B ????
-    print("-------------------------Task 2b----------------------------")
+    print("__________________________________________________Task 2b__________________________________________________")
     vanSchedule = [['N/A' for x in range(10)] for x in range(15)]
     vanScheduleItems = 0
     FROM = 0
@@ -212,8 +212,6 @@ def task2b(): # Calculate number of days whilst taking into account van can only
                 vanSchedule[vanScheduleItems][VANVALUE] = getItemValue(getWarehouseNumber(row[1]),row[0])
                 vanSchedule[vanScheduleItems][VANWEIGHT] = getItemWeight(getWarehouseNumber(row[1]), row[0])
                 vanScheduleItems += 1
-    for x in range(10):
-        print(vanSchedule[x])
     for x in range(10):
         for y in range(10):
             if vanSchedule[x][FROM] == vanSchedule[y][FROM] and vanSchedule[x][TO] == vanSchedule[y][TO] and vanSchedule[x][ITEM] != vanSchedule[y][ITEM]:
@@ -242,7 +240,7 @@ def task2b(): # Calculate number of days whilst taking into account van can only
 
 def task3(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
     #ITEM 15108 IS IN A NOT B ????
-    print("-------------------------Task 3----------------------------")
+    print("\n_________________________________________________Task 3_________________________________________________")
     CSV_LENGTH = 17
     vanSchedule = [['N/A' for x in range(10)] for x in range(CSV_LENGTH)]
     vanScheduleItems = 0
@@ -284,7 +282,7 @@ def task3(): # Calculate number of days whilst taking into account van can only 
     print(" ______________________________________________________________________________________________________"
         "\n|______________________________________________Van Schedule____________________________________________|"
         "\n| From | To | No. Items | Total Value | Total Weight | Item(s)                                         |")
-    for x in range(10):
+    for x in range(14):
         if vanSchedule[x][0] != 0:
             print(
           "| {:<4} |".format(vanSchedule[x][0]),"{:<2} |".format(vanSchedule[x][1]),"{:<9} |".format(vanSchedule[x][2]),
@@ -295,23 +293,36 @@ def task3(): # Calculate number of days whilst taking into account van can only 
 
     col = 2
     row = 6
-    validRoutes = [[0 for x in range(col)] for x in range(row
-                                                          )]
-    #A-B
-    #A-C
-    #A-D
-    #B-C
-    #B-D
-    #C-D
+    validRoutes = [[99 for x in range(col)] for x in range(row)]
+    # A-B
+    # A-C
+    # A-D
+    # B-C
+    # B-D
+    # C-D
+    validRoutes[0][0] = WAREHOUSE_A
+    validRoutes[0][1] = WAREHOUSE_B
+    validRoutes[1][0] = WAREHOUSE_A
+    validRoutes[1][1] = WAREHOUSE_C
+    validRoutes[2][0] = WAREHOUSE_A
+    validRoutes[2][1] = WAREHOUSE_D
+    validRoutes[3][0] = WAREHOUSE_B
+    validRoutes[3][1] = WAREHOUSE_C
+    validRoutes[4][0] = WAREHOUSE_B
+    validRoutes[4][1] = WAREHOUSE_D
+    validRoutes[5][0] = WAREHOUSE_C
+    validRoutes[5][1] = WAREHOUSE_D
 
-    #Define possible routes
-    #All vanSchedule must fall into them
-    #
-    #for every row in vanschedule
-    #Fill into one of the routes
-    #
+
+    for x in range (vanScheduleItems):
+        for y in range(6):
+            if getWarehouseNumber(vanSchedule[x][FROM]) == validRoutes[y][0] and getWarehouseNumber(vanSchedule[x][TO]) == validRoutes[y][1]:
+                print("Route From: " + str(vanSchedule[x][FROM]) + " To: " + str(vanSchedule[x][TO]) + " is valid")
 
 
+
+def task4():
+    
 initialiseWarehouses(WAREHOUSE_A)
 initialiseWarehouses(WAREHOUSE_B)
 initialiseWarehouses(WAREHOUSE_C)
