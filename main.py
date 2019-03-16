@@ -69,6 +69,28 @@ warehouseData[WAREHOUSE_D][WAREHOUSE_PYRAMID_WEIGHT] = 3000
 warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE] = 10
 warehouseData[WAREHOUSE_D][WAREHOUSE_SQUARE_WEIGHT] = 750
 
+col = 2
+row = 6
+validRoutes = [[99 for x in range(col)] for x in range(row)]
+# A-B
+# A-C
+# A-D
+# B-C
+# B-D
+# C-D
+validRoutes[0][0] = WAREHOUSE_A
+validRoutes[0][1] = WAREHOUSE_B
+validRoutes[1][0] = WAREHOUSE_A
+validRoutes[1][1] = WAREHOUSE_C
+validRoutes[2][0] = WAREHOUSE_A
+validRoutes[2][1] = WAREHOUSE_D
+validRoutes[3][0] = WAREHOUSE_B
+validRoutes[3][1] = WAREHOUSE_C
+validRoutes[4][0] = WAREHOUSE_B
+validRoutes[4][1] = WAREHOUSE_D
+validRoutes[5][0] = WAREHOUSE_C
+validRoutes[5][1] = WAREHOUSE_D
+
 #Initialises a warehouse takes a int warehouse number as paramater
 def initialiseWarehouses(warehouseNumber):
     warehouseData[warehouseNumber][WAREHOUSE_SPACE] = INSURED_MAX_SINGLE
@@ -137,6 +159,16 @@ def getShapeNumber(passedString):
     if passedString == 'Square':
         return WAREHOUSE_SQUARE
 
+def getShapeName(shapeNumber):
+    if shapeNumber == WAREHOUSE_RECTANGLE:
+        return 'Rectangle'
+    if shapeNumber == WAREHOUSE_SPHERE:
+        return 'Sphere'
+    if shapeNumber == WAREHOUSE_PYRAMID:
+        return 'Pyramid'
+    if shapeNumber == WAREHOUSE_SQUARE:
+        return 'Square'
+    return 'Not Found'
 
 def getWarehouseNumber(passedString):
     for x in range(NUMBER_OF_WAREHOUSES):
@@ -156,6 +188,14 @@ def getItemWeight(warehouseNumber, itemNumber):
         if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
             #print("Found " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
             return warehouse[warehouseNumber][x][4]
+    #print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
+    return 1
+
+def getItemShape(warehouseNumber, itemNumber):
+    for x in range(warehouseData[warehouseNumber][WAREHOUSE_ITEMS]):
+        if str(itemNumber) == str(warehouse[warehouseNumber][x][0]):
+            #print("Found " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
+            return getShapeNumber(warehouse[warehouseNumber][x][3])
     #print("Cant Find " + str(itemNumber + " In warehouse " + WAREHOUSE_NAMES[warehouseNumber]))
     return 1
 
@@ -291,28 +331,6 @@ def task3(): # Calculate number of days whilst taking into account van can only 
           "{:<7} |".format(vanSchedule[x][9]),)
     print("|______|____|___________|_____________|______________|_________________________________________________|")
 
-    col = 2
-    row = 6
-    validRoutes = [[99 for x in range(col)] for x in range(row)]
-    # A-B
-    # A-C
-    # A-D
-    # B-C
-    # B-D
-    # C-D
-    validRoutes[0][0] = WAREHOUSE_A
-    validRoutes[0][1] = WAREHOUSE_B
-    validRoutes[1][0] = WAREHOUSE_A
-    validRoutes[1][1] = WAREHOUSE_C
-    validRoutes[2][0] = WAREHOUSE_A
-    validRoutes[2][1] = WAREHOUSE_D
-    validRoutes[3][0] = WAREHOUSE_B
-    validRoutes[3][1] = WAREHOUSE_C
-    validRoutes[4][0] = WAREHOUSE_B
-    validRoutes[4][1] = WAREHOUSE_D
-    validRoutes[5][0] = WAREHOUSE_C
-    validRoutes[5][1] = WAREHOUSE_D
-
 
     for x in range (vanScheduleItems):
         for y in range(6):
@@ -322,7 +340,67 @@ def task3(): # Calculate number of days whilst taking into account van can only 
 
 
 def task4():
-    
+    print("|________________________________________________Task 4________________________________________________|\n")
+    CSV_LENGTH = 17
+    vanSchedule = [['N/A' for x in range(10)] for x in range(CSV_LENGTH)]
+    vanScheduleItems = 0
+    FROM = 0
+    TO = 1
+    NUMBEROFITEMS = 2
+    VANVALUE = 3
+    VANWEIGHT = 4
+    SHAPE = 5
+    ITEM = 6
+    with open('DADSA Assignment 2018-19 PART B DATA FOR TASK 3 AND 4.csv') as csvFile:
+        csv_reader = csv.reader(csvFile, delimiter=',')
+        for row in csv_reader:
+            if row[0] != 'ITEM':
+                vanSchedule[vanScheduleItems][FROM] = row[1]
+                vanSchedule[vanScheduleItems][TO] = row[2]
+                vanSchedule[vanScheduleItems][NUMBEROFITEMS] = 1
+                vanSchedule[vanScheduleItems][ITEM] = row[0]
+                vanSchedule[vanScheduleItems][VANVALUE] = getItemValue(getWarehouseNumber(row[1]),row[0])
+                vanSchedule[vanScheduleItems][VANWEIGHT] = getItemWeight(getWarehouseNumber(row[1]), row[0])
+                vanSchedule[vanScheduleItems][SHAPE] = getItemShape(getWarehouseNumber(row[1]), row[0])
+                vanScheduleItems += 1
+    for x in range(CSV_LENGTH):
+        for y in range(CSV_LENGTH):
+            if vanSchedule[x][FROM] == vanSchedule[y][FROM] and vanSchedule[x][TO] == vanSchedule[y][TO] and vanSchedule[x][ITEM] != vanSchedule[y][ITEM]:
+                if vanSchedule[x][VANVALUE] + getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < INSURED_VAN:
+                    if vanSchedule[x][VANWEIGHT] + getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]) < 2000:
+                        if vanSchedule[x][SHAPE] == getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM]):
+                            vanSchedule[x][NUMBEROFITEMS] += 1
+                            vanSchedule[x][FROM] = vanSchedule[y][FROM]
+                            vanSchedule[x][TO] = vanSchedule[y][TO]
+                            vanSchedule[x][vanSchedule[x][NUMBEROFITEMS] + 5] = vanSchedule[y][ITEM]
+                            vanSchedule[x][VANVALUE] += getItemValue(getWarehouseNumber(vanSchedule[y][FROM]), vanSchedule[y][ITEM])
+                            vanSchedule[x][VANWEIGHT] += getItemWeight(getWarehouseNumber(vanSchedule[y][FROM]),vanSchedule[y][ITEM])
+                            vanSchedule[y][FROM] = 0
+                            vanSchedule[y][TO] = 0
+                            vanSchedule[y][ITEM] = 0
+                    else:
+                        print("Cant have will be too high WEIGHT")
+                else:
+                    print("Cant have will be too high value")
+    print(" ____________________________________________________________________________________________________________________"
+        "\n|_____________________________________________________Van Schedule___________________________________________________|"
+        "\n| Day No. | From | To   | No. Items | Total Value | Total Weight | Shape     | Item(s)                               |")
+    for x in range(CSV_LENGTH - 1):
+        if vanSchedule[x][0] != 0:
+            print(
+          "| {:<7} |".format(x),"{:<5}|".format(vanSchedule[x][FROM]),"{:<5}|".format(vanSchedule[x][TO]),
+          "{:<9} |".format(vanSchedule[x][NUMBEROFITEMS]),"{:<10}  |".format(vanSchedule[x][VANVALUE]),
+          "{:<12} |".format(vanSchedule[x][VANWEIGHT]),"{:<9} |".format(getShapeName(vanSchedule[x][SHAPE])),
+          "{:<7} |".format(vanSchedule[x][6]),"{:<7} |".format(vanSchedule[x][7]),"{:<7} |".format(vanSchedule[x][8]),
+          "{:<7} |".format(vanSchedule[x][9]),)
+    print("|_________|______|______|___________|_____________|______________|___________________________________________________|")
+
+
+    for x in range (vanScheduleItems):
+        for y in range(6):
+            if getWarehouseNumber(vanSchedule[x][FROM]) == validRoutes[y][0] and getWarehouseNumber(vanSchedule[x][TO]) == validRoutes[y][1]:
+                print("Route From: " + str(vanSchedule[x][FROM]) + " To: " + str(vanSchedule[x][TO]) + " is valid")
+
 initialiseWarehouses(WAREHOUSE_A)
 initialiseWarehouses(WAREHOUSE_B)
 initialiseWarehouses(WAREHOUSE_C)
@@ -332,3 +410,4 @@ task1()
 task2a()
 task2b()
 task3()
+task4()
