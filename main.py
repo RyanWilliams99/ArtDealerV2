@@ -39,10 +39,10 @@ COLUMNS_IN_CSV = 5
 # Defines a list of length 4 with 1024 sublists then another 3 sublist for all 1024
 warehouse = [[[0 for x in range(COLUMNS_IN_CSV)] for y in range(MAX_NUMBER_OF_ITEMS)] for z in range(NUMBER_OF_WAREHOUSES)]
 # 2D list used to store the data about each of the warehouses
-warehouseData = warehouseA = [[0 for x in range(WAREHOUSE_DATA_LIST_ITEMS)] for y in range(NUMBER_OF_WAREHOUSES)]
+warehouseData =  [[0 for x in range(WAREHOUSE_DATA_LIST_ITEMS)] for y in range(NUMBER_OF_WAREHOUSES)]
 overallCapacity = 0
 
-# Define Valid routes
+# Define Valid routes for Task 3 and 4
 col = 2
 row = 6
 validRoutes = [[6 for x in range(col)] for y in range(row)]
@@ -60,6 +60,7 @@ validRoutes[4][1] = WAREHOUSE_D
 validRoutes[5][0] = WAREHOUSE_C
 validRoutes[5][1] = WAREHOUSE_D
 
+
 # Initialises a warehouse takes a int warehouse number as paramater
 def initWarehouses():
     for x in range(NUMBER_OF_WAREHOUSES):
@@ -72,7 +73,6 @@ def initWarehouses():
             for y in range(warehouseData[x][WAREHOUSE_DATA_ITEMS]):  # Calculating Value of warehouse
                 warehouseData[x][WAREHOUSE_DATA_VALUE] = warehouseData[x][WAREHOUSE_DATA_VALUE] + int(warehouse[x][y][2])
             warehouseData[x][WAREHOUSE_DATA_SPACE] = INSURED_MAX_SINGLE - warehouseData[x][WAREHOUSE_DATA_VALUE]
-
 
 def printAllWarehouses():
     print("Printing contents of all warehouses...")
@@ -111,30 +111,28 @@ def addNewItem(warehouseNumber, itemNumber, description, value, shape, weight):
             warehouseData[warehouseNumber][WAREHOUSE_DATA_SPACE] = warehouseData[warehouseNumber][WAREHOUSE_DATA_SPACE] - value
             warehouseData[warehouseNumber][WAREHOUSE_DATA_ITEMS] += 1 # Increment items remove space and remove 1 shape
             warehouseData[warehouseNumber][getShapeNumber(shape)] -= 1
-        else:
-            print("Item value is too much")
-            addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
+        else: #Should try to add somewhere else
+            print("Item value is too much for this warehouse")
+            if warehouseNumber + 1 < 4: #As long as in bounds try next warehouse
+                addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
     else:
         print("Cannot store " + shape + " in Warehouse " + WAREHOUSE_NAMES[warehouseNumber])
-        addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
+        if warehouseNumber + 1 < 4:
+            addNewItem(warehouseNumber + 1, itemNumber, description, value, shape, weight)
 
 
 def getShapeNumber(passedString): # Returns the shape number used in warehouse data
     if passedString == 'Rectangle':
-        #print("Was Passed " + passedString + " About to return RRECTANG:E")
         return WAREHOUSE_DATA_RECTANGLE
     if passedString == 'Sphere':
-        #print("Was Passed " + passedString + " About to return SSPHERE")
         return WAREHOUSE_DATA_SPHERE
     if passedString == 'Pyramid':
-       # print("Was Passed " + passedString + " About to return PYRAMINDED")
         return WAREHOUSE_DATA_PYRAMID
     if passedString == 'Square':
-        #print("Was Passed " + passedString + " About to return SQAURE")
         return WAREHOUSE_DATA_SQUARE
     return 0
 
-def getShapeName(shapeNumber): # Revers of above
+def getShapeName(shapeNumber): # Reverse of the above
     if shapeNumber == WAREHOUSE_DATA_RECTANGLE:
         return 'Rectangle'
     if shapeNumber == WAREHOUSE_DATA_SPHERE:
@@ -145,27 +143,35 @@ def getShapeName(shapeNumber): # Revers of above
         return 'Square'
     return 'Not Found'
 
-def getWarehouseNumber(passedString): # Returns warehouse number
+def getWarehouseNumber(passedString): # Returns warehouse number. eg convert 'A' to WAREHOUSE_A or 0
     for x in range(NUMBER_OF_WAREHOUSES):
         if passedString == WAREHOUSE_NAMES[x]:
             return x
 
-def getItemData(itemNumber, dataRequested):
-    for x in range(NUMBER_OF_WAREHOUSES):
-        for y in range(warehouseData[x][WAREHOUSE_DATA_ITEMS]):
+        
+def getItemData(itemNumber, dataRequested): # Takes item number and 0-4 for which column eg 15108 3 returns the shape
+    for x in range(NUMBER_OF_WAREHOUSES): # For every warehouse
+        for y in range(warehouseData[x][WAREHOUSE_DATA_ITEMS]): # For number of items in current warehouse
             if int(itemNumber) == int(warehouse[x][y][0]):
                 if dataRequested == WAREHOUSE_VALUE or dataRequested == WAREHOUSE_WEIGHT:
                     return int(warehouse[x][y][dataRequested])
                 else:
                     return str(warehouse[x][y][dataRequested])
 
-def initWarehouseData():
+def initWarehouseData(): #Reads Shape and weight data from a CSV
     with open('DADSA Assignment 2018-19 PART B Warehouse Capacity.csv') as csvFile:
         csv_reader = csv.reader(csvFile)  # returns a reader object which is then iterated over
         for row in csv_reader:  # For every row in csv file
             if row[0] != 'Warehouse':  # This excludes the first row of the file
                 warehouseData[int(row[0])][int(row[1])] = int(row[2])
                 warehouseData[int(row[0])][int(row[1]) + 1] = int(row[3])
+
+def clearWarehouseData():
+    for x in range(NUMBER_OF_WAREHOUSES):
+        for y in range(COLUMNS_IN_CSV):
+            warehouse[x][y] = 0
+        # for y in range(WAREHOUSE_DATA_LIST_ITEMS):
+        #     warehouseData[x][y] = 0
 
 def task1(): # Add new items based on data in TASK 1 CSV
     print("__________________________________________________Task 1__________________________________________________")
@@ -177,11 +183,10 @@ def task1(): # Add new items based on data in TASK 1 CSV
                 print("Excluding First Row")
                 addedItems = addedItems + 1
             else:
-                #print("Adding item " + row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4])
                 addNewItem(WAREHOUSE_A, row[0], row[1], int(row[2]), row[3], row[4])
 
 
-def task2a(): # Calculate days to move items based on csv whilst checking weight and value
+def task2a(): # Calculate days to move items based on csv
     print("__________________________________________________Task 2a__________________________________________________")
     addedItems = 0
     daysToRelocate = 0
@@ -197,10 +202,10 @@ def task2a(): # Calculate days to move items based on csv whilst checking weight
         return daysToRelocate
 
 
-def task2b(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
+def task2b(): # Calculate number of days whilst taking into account van weight and value
     print("__________________________________________________Task 2b__________________________________________________")
-    CSV_LENGTH = 10
-    vanSchedule = [['N/A' for x in range(10)] for x in range(15)]
+    CSV_LENGTH = 10 #Declare constants and 2D list
+    vanSchedule = [['N/A' for x in range(CSV_LENGTH)] for x in range(15)]
     vanScheduleItems = 0
     FROM = 0
     TO = 1
@@ -241,7 +246,7 @@ def task2b(): # Calculate number of days whilst taking into account van can only
 
 def task3(): # Calculate number of days whilst taking into account van can only move 1.5 bn and destination warehouse must have shape avalable
     print("\n_________________________________________________Task 3_________________________________________________")
-    CSV_LENGTH = 17
+    CSV_LENGTH = 17 #Declare constants and 2D list
     vanSchedule = [['N/A' for x in range(10)] for x in range(CSV_LENGTH)]
     vanScheduleItems = 0
     FROM = 0
@@ -291,7 +296,7 @@ def task3(): # Calculate number of days whilst taking into account van can only 
 
 def task4():
     print("|________________________________________________Task 4________________________________________________|\n")
-    CSV_LENGTH = 17
+    CSV_LENGTH = 17 #Declare constants and 2D list
     vanSchedule = [['N/A' for x in range(10)] for x in range(CSV_LENGTH)]
     vanScheduleItems = 0
     FROM = 0
@@ -341,12 +346,12 @@ def task4():
                 print("Route From: " + str(vanSchedule[x][FROM]) + " To: " + str(vanSchedule[x][TO]) + " is valid")
 
 
-def printVanSchedule(length, vanSchedule):
+def printVanSchedule(length, vanSchedule): #Prints a 2d list in table form. Used to display van schedule
     linesPrinted = 0
     print(" ____________________________________________________________________________________________________________________"
         "\n|_____________________________________________________Van Schedule___________________________________________________|"
         "\n| Day No. | From | To   | No. Items | Total Value | Total Weight | Shape     | Item(s)                               |")
-    for x in range(length):
+    for x in range(length): #For the number of items in list
         if vanSchedule[x][0] != 0:
             linesPrinted += 1
             print(
@@ -358,11 +363,39 @@ def printVanSchedule(length, vanSchedule):
     print("|_________|______|______|___________|_____________|______________|___________________________________________________|")
 
 
+def mainProgramLoop():
+
+    while(1): #Infinite loop that waits until user gives input
+
+        print("_________________________________________________________________________________________________________\n"
+              "Art Dealer warehouse manager Enter a number between 1 - 6\n1 - Task 1\n2 - Task 2\n3 - Task 3\n4 - Task 2"
+              "\n5 - Print All Warehouses\n6 - Exit")
+        command = input("Enter a command number between 0 and 5\n") #Prompts for user input
+        if (command.isdigit() == False) or (int(command) < 0) or (int(command)) > 6: #Checks user input is valid
+            print("Invalid Command number")
+            mainProgramLoop() #Calls the main loop again to "reset" if the input is invalid
+
+        if int(command) == 1:
+            task1()
+            printAllWarehouses()
+
+        if int(command) == 2:
+            task2a()
+            task2b()
+
+        if int(command) == 3:
+            task3()
+
+        if int(command) == 4:
+            task4()
+
+        if int(command) == 5:
+            printAllWarehouses()
+
+        if int(command) == 6:
+            exit(0)
+
+
 initWarehouseData()
 initWarehouses()
-printAllWarehouses()
-task1()
-task2a()
-task2b()
-task3()
-task4()
+mainProgramLoop()
